@@ -15,7 +15,7 @@
             <div v-if='error' class="alert alert-danger" role="alert">
                 {{error}}
             </div>
-            <div v-if='!error' class="jumbotron" v-if='info'>
+            <div v-if='!error && info' class="jumbotron" v-if='info'>
                 <h1 class="display-4">{{info.name}}!</h1>
                 <p class="lead">{{info.weather[0].description}}</p>
                 <hr class="my-4">
