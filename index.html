@@ -1,0 +1,28 @@
+<html>
+    <script src="node_modules/jquery/jquery.js"></script>
+    <script src="node_modules/popper.js/dist/popper.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/vue-resource/dist/vue-resource.js"></script>
+    <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.css" />
+    <body>
+        <div id='app'>
+            <input v-if='editable' v-model="appId" placeholder="edit me">
+            <p v-if='!editable'>{{appId}}</p>
+            <button @click='saveAppId()'>{{ editable ? 'save': 'edit'}}</button>
+            <input v-model="city" placeholder="insert your city" />
+            <button @click='loadWeatherByCity()'>Carica meteo</button>
+            <div v-if='error' class="alert alert-danger" role="alert">
+                {{error}}
+            </div>
+            <div v-if='!error' class="jumbotron" v-if='info'>
+                <h1 class="display-4">{{info.name}}!</h1>
+                <p class="lead">{{info.weather[0].description}}</p>
+                <hr class="my-4">
+                <p>Lat: {{ info.coord.lat }}, Lon: {{ info.coord.lon }}</p>
+                <p>Temp: {{ ktoc(info.main.temp) }}°</p>
+            </div>
+        </div>
+    </body>
+    <script src="./app.js"></script>
+</html>
