@@ -7,21 +7,68 @@
     <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.css" />
     <body>
         <div id='app'>
-            <input v-if='editable' v-model="appId" placeholder="edit me">
-            <p v-if='!editable'>{{appId}}</p>
-            <button @click='saveAppId()'>{{ editable ? 'save': 'edit'}}</button>
-            <input v-model="city" placeholder="insert your city" />
-            <button @click='loadWeatherByCity()'>Carica meteo</button>
-            <div v-if='error' class="alert alert-danger" role="alert">
-                {{error}}
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="#">Navbar</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{currentTeam ? currentTeam.country : 'Seleziona Squadra'}}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a @click='currentTeam = null' class="dropdown-item" href="#">Nessuna Squadra</a>
+                            <a v-for='team in teams' @click='loadMatchesByCode(team)' class="dropdown-item" href="#">{{team.country}}</a>
+                        </div>
+                    </li>
+                    </ul>
+                    <div class="form-inline my-2 my-lg-0">
+                    <input v-model="name" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button @click='findCodeByTeamName(name)' class="btn btn-outline-success my-2 my-sm-0" type="button">Search</button>
+                    </div>
+                </div>
+                </nav>
+            <!--<input v-model="code" placeholder="insert your code">
+            <button @click='loadMatchesByCode(code)'>Carica Match Squadra</button>-->
+            <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                        <ul class="list-group">
+                                <li  v-for='match in matches' class="list-group-item">
+                                    <a @click='findCodeByTeamName(match.home_team.country)' href='#'>
+                                        {{ match.home_team.country }} 
+                                    </a>
+                                    {{match.home_team.goals}} - 
+                                    <a @click='findCodeByTeamName(match.away_team.country)' href='#'>
+                                            {{ match.away_team.country }} 
+                                    </a>
+                                    {{match.away_team.goals}}
+                                </li>
+                            </ul>
+                    </div>
+                    <div class="col-sm">
+                        <ul class="list-group">
+                            <li v-for='group in groups' v-if='!currentTeam || (group.letter === currentTeam.group_letter)' class="list-group-item">
+                                <h3>{{group.letter}}</h3>
+                                <ul class="list-group">
+                                    <li v-for='row in group.ordered_teams' class="list-group-item">
+                                        {{row.country}} 
+                                        <span class="badge badge-light">{{row.points}}</span>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div v-if='!error' class="jumbotron" v-if='info'>
-                <h1 class="display-4">{{info.name}}!</h1>
-                <p class="lead">{{info.weather[0].description}}</p>
-                <hr class="my-4">
-                <p>Lat: {{ info.coord.lat }}, Lon: {{ info.coord.lon }}</p>
-                <p>Temp: {{ ktoc(info.main.temp) }}°</p>
-            </div>
+           
+            <!--<p v-for='match in matches'>
+                {{ match.home_team.country }} {{match.home_team.goals}} - 
+                {{ match.away_team.country }} {{match.away_team.goals}}
+            </p>-->
         </div>
     </body>
     <script src="./app.js"></script>

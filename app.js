@@ -1,46 +1,61 @@
 var vue = new Vue({
     el: '#app',
     data: {
-        appId: '',
-        editable: false,
-        info: null,
-        city: 'London',
-        error: null,
+        matches: [],
+        teams: [],
+        name: '',
+        currentTeam: null,
+        groups: []
     },
     methods: {
-        saveAppId: function() {
-            if (this.editable) {
-                localStorage.setItem('APP_ID', this.appId);
-            } 
-            this.editable = !this.editable;
+        loadMatches: function() {
+            var url = 'https://worldcup.sfg.io/matches';
+            this.$http.get(url).then(response => {
+                this.matches = response.body;
+            });
         },
-        loadWeatherByCity: function() {
-            /*fetch('http://api.openweathermap.org/data/2.5/weather?q=' + this.city +'&appid=' + localStorage.getItem('APP_ID'))
-                .then((response) => {
-                    return response.json();
-                }).then((response) => {
-                    console.log("response:", JSON.stringify(response));
-                    this.info = response;
-                })*/
-            this.$http.get('http://api.openweathermap.org/data/2.5/weather?q=' + this.city +'&appid=' + localStorage.getItem('APP_ID'))
-                .then(response => {
-                    this.error = null;
-                    console.log(response.body);
-                    this.info = response.body;
-                }, response => {
-                    this.error = response.body.message;
-                    console.log("response:", response);
-                });
-            this.$http.post('url....', {city: this.city})
+        loadMatchesByCode: function(team){
+            this.currentTeam = team;
+            var url = 'https://worldcup.sfg.io/matches/country?fifa_code=' + team.fifa_code;
+            this.$http.get(url).then(response => {
+                this.matches = response.body;
+            });
         },
-        ktoc: function(k) {
-            return (k - 273.15).toFixed(1);
+        loadTeams: function() {
+            var url = 'https://worldcup.sfg.io/teams/';
+            this.$http.get(url).then(response => {
+                this.teams = response.body;
+            });
+        },
+        findCodeByTeamName: function(name) {
+            for(var team of this.teams) {
+                if (team.country === name) {
+                    return this.loadMatchesByCode(team);
+                }
+            }
+        },
+        loadGroups: function() {
+            var url = 'https://worldcup.sfg.io/teams/group_results';
+            this.$http.get(url).then(response => {
+                this.groups = response.body;
+            });
         }
     },
     created: function() {
-        this.appId = localStorage.getItem('APP_ID');
-        if (this.appId) {
-            this.loadWeatherByCity();
+        this.loadTeams();
+        this.loadMatches();
+        this.loadGroups();
+    },
+    watch: {
+        /*'code': function (newVal) {
+            if(newVal.length === 3){
+                this.loadMatchesByCode(newVal);
+            }
+        }*/
+        'currentTeam': function(newVal, oldVal) {
+            if (newVal === null && oldVal !== null) {
+                this.loadMatches();
+            }
         }
     }
 })
