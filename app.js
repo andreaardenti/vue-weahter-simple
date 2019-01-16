@@ -39,6 +39,17 @@ var vue = new Vue({
             this.$http.get(url).then(response => {
                 this.groups = response.body;
             });
+        },
+        newToDo: function() {
+            var newToDo = {
+                name: 'Ciao',
+                description: 'Ciao',
+                assignedTo: 'caio'
+            }
+            var url = 'https://todos-list-sj.herokuapp.com/todos';
+            this.$http.post(url, newToDo).then(response => {
+                console.log("response:", response);
+            });
         }
     },
     created: function() {
